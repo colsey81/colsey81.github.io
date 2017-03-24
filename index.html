@@ -65,7 +65,7 @@
     <button class="button" id="k5" type="button">Click K5</button>
     <button class="button" id="k6" type="button">Click K6</button>
     </div>
-    <div><img id="pics" style.visibility="false" class="image" width="25%" height="25%" src="minPics/k2.png" /></div>
+    <div><img id="pics" style.visibility="false" class="image" width="25%" height="25%" src="/minPics/k2.PNG" /></div>
     <div id="tooltip" class="hidden">
     </div>
 
@@ -206,7 +206,7 @@
                 .on("mouseover", function() {
                     //Set image src to correct value
                     d3.select("#pics")
-                        .attr("src", "minPics/" + d3.select(this).attr("id") + ".png")
+                        .attr("src", "minPics/" + d3.select(this).attr("id") + ".PNG")
                         .style("visibility", "visible");
                 })
                 .on("mouseout", function() {
