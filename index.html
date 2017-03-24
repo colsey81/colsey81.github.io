@@ -33,6 +33,13 @@
         #tooltip.hidden {
             display: none;
         }
+
+        #pics {
+            visibility: hidden;
+        }
+        div{
+    text-align:center;
+}
     </style>
 </head>
 
@@ -44,19 +51,21 @@
     </div>
 
     <div style="text-align:center;"></div>
-        <h2><center>Assignment 2B: Visualizing geodata</center></h2>
-        <h2 id="kmean" style="text-align:center;"><strong>Showing Data for k2</strong></h2>
-        <div id="vis2" style="text-align:center;"></div>
+    <h2><center>Assignment 2B: Visualizing geodata</center></h2>
+    <h2 id="kmean" style="text-align:center;"><strong>Showing Data for k2</strong></h2>
+    <div id="vis2" style="text-align:center;"></div>
     </div>
 
-    <div id="vis3" style="text-align:center;"></div>
-        <button type="button" onclick="update('k2')">Click K2</button>
-        <button type="button" onclick="update('k3')">Click K3</button>
-        <button type="button" onclick="update('k4')">Click K4</button>
-        <button type="button" onclick="update('k5')">Click K5</button>
-        <button type="button" onclick="update('k6')">Click K6</button>
-    </div>
 
+
+    <div id="vis3"></div>
+    <button class="button" id="k2" type="button">Click K2</button>
+    <button class="button" id="k3" type="button">Click K3</button>
+    <button class="button" id="k4" type="button">Click K4</button>
+    <button class="button" id="k5" type="button">Click K5</button>
+    <button class="button" id="k6" type="button">Click K6</button>
+    </div>
+    <div><img id="pics" style.visibility="false" class="image" width="25%" height="25%" src="minPics/k2.png" /></div>
     <div id="tooltip" class="hidden">
     </div>
 
@@ -187,6 +196,28 @@
                 .attr("font-weight", "bold")
                 .style("text-anchor", "end")
                 .text("Vehicle theft");
+
+
+            // Map Preview
+            d3.selectAll(".button")
+                .on("click", function() {
+                    update(d3.select(this).attr("id"));
+                })
+                .on("mouseover", function() {
+                    //Set image src to correct value
+                    d3.select("#pics")
+                        .attr("src", "minPics/" + d3.select(this).attr("id") + ".png")
+                        .style("visibility", "visible");
+                })
+                .on("mouseout", function() {
+                    d3.select("#pics")
+                        .style("visibility", "hidden");
+                })
+
+
+
+
+
 
 
             //On click, update with new data
