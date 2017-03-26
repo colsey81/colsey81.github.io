@@ -2,420 +2,78 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
     <title>Assignment 2</title>
-    <script type="text/javascript" src="d3.js"></script>
-    <style type="text/css">
-        .center {
-            margin: auto;
-            display: block;
-        }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 
-        .axis path,
-        .axis line {
-            fill: none;
-            stroke: blue;
-            shape-rendering: crispEdges;
-        }
-
-        .axis text {
-            font-family: sans-serif;
-            font-size: 11px;
-        }
-
-        #tooltip {
-            position: absolute;
-            width: auto;
-            height: auto;
-            pointer-events: none;
-        }
-
-        #tooltip.hidden {
-            display: none;
-        }
-
-        #pics {
-            visibility: hidden;
-        }
-        div{
-    text-align:center;
-}
-    </style>
+    <link rel="stylesheet" type="text/css" href="src/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="src/css/Assignment2.css">
+    <script type="text/javascript" src="src/bootstrap/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="src/bootstrap/js/bootstrap.js"></script>
+    <script src="d3.js"></script>
 </head>
 
 <body>
-    <div id="vis1" style="text-align:center;">
-        <h2><center>Assignment 2A: One scatter plot and two datasets</center></h2>
-        <h2 id="year"><strong>Showing Data for 2003</strong></h2>
-        <p>Press Anywhere on the Chart to Toggle Years</p>
+    <!------------------------------------------------------ Container For all Views ------------------------------------------------->
+    <div class="container">
+        <!----------------------------------------------------------- Assignment 2A -------------------------------------------------------------->
+        <h2 align="center"><strong>Assignment 2A: One scatter plot and two datasets</strong></h2>
+        <div class="container" id="vis1" align="center">
+            <p align="left">Each point corresponds to a different police department district in San Francisco.
+              By mousing over the different points the tooltip label will display its name and values.
+                <br> The plot is organised with the X axis of each point corresponding to the number of
+                <b><i>Prostitution</i></b> crimes in that district, while the Y value corresponds to the number of <b><i>Vehicle Thefts</i></b> crimes.
+                The area of each point corresponds to the total recorded crime for that district.</p>
+            <h2 id="year">Showing Data for 2003</h2>
+            <p>Press Anywhere on the Chart to Toggle Years</p>
+        </div>
+        <div>
+          <p><b>Explain in your own words why you think I want the axes to be the same for both years?</b><br>
+            By keeping the scale the same for both years it is easy to see the comparison between the crime value for the two years.
+            Prostitution and Vehicle Thefts were both higher in 2003, when switching to 2015 because the scale has been kept the same this drop in crime can
+            be visualised by the points moving down both the X and Y axis. If the axis had been rescaled the new axis values would ensure that the new data points
+            filled as much of the graph as possible and so this visualisation of the movement of the crime points to a lower level would have been lost.
+          </p>
+        </div>
+        <div id="tooltip" class="hidden">
+        </div>
+        <!--------------------------------------------------------- Assignment 2B   ----------------------------------------------->
+
+        <h2 align="center"><strong>Assignment 2B: Visualizing Geodata</strong></h2>
+        <p align="left">Each point corresponds to a recorded <b><i>Prostitution</i></b> crime. A K-means clustering algorithm
+          is used to determine the cluster centers for Prostitution crime. Different values of K are tried form 2-6. Displayed below
+          is a map of the city showing the different police districts with the prostitution crime points overlayed. The colour of the points
+          correspond to the cluster center for that area denoted by a bigger circle of the same colour outlined in black. The value of
+          K can be changed by pressing on one of the 5 buttons K2-K6. A preview is displayed when hovering over the button. When hovering over
+          a point on the map, its Lat and Lon will be displayed.
+
+
+
+            <h2 id="kmean" align="center">Showing Data for k6</h2>
+            <div class="btn col-xs-12 col-sm-12 col-md-12" align="center">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary button" id="k2">Click k2</button>
+                    <button type="button" class="btn btn-primary button" id="k3">Click k3</button>
+                    <button type="button" class="btn btn-primary button" id="k4">Click k4</button>
+                    <button type="button" class="btn btn-primary button" id="k5">Click k5</button>
+                    <button type="button" class="btn btn-primary button" id="k6">Click k6</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-3 col-md-3">
+                    <h2 id="preview">Preview:</h2>
+                    <img id="pics" style.visibility="false" class="image" width="100%" height="100%" src="minPics/k2.PNG" />
+                    <div id="tooltip2" class="hidden">
+                    </div>
+                </div>
+                <div class="col-xs-9 col-sm-9 col-md-9" id="vis2" align="center">
+                </div>
+            </div>
     </div>
 
-    <div style="text-align:center;"></div>
-    <h2><center>Assignment 2B: Visualizing geodata</center></h2>
-    <h2 id="kmean" style="text-align:center;"><strong>Showing Data for k2</strong></h2>
-    <div id="vis2" style="text-align:center;"></div>
-    </div>
-
-
-
-    <div id="vis3"></div>
-    <button class="button" id="k2" type="button">Click K2</button>
-    <button class="button" id="k3" type="button">Click K3</button>
-    <button class="button" id="k4" type="button">Click K4</button>
-    <button class="button" id="k5" type="button">Click K5</button>
-    <button class="button" id="k6" type="button">Click K6</button>
-    </div>
-    <div><img id="pics" style.visibility="false" class="image" width="25%" height="25%" src="/minPics/k2.PNG" /></div>
-    <div id="tooltip" class="hidden">
-    </div>
-
-    <script type="text/javascript">
-        //Width and height
-        var padding = 50;
-        w = 1000;
-        h = 600;
-
-        //Create SVG element
-        var svg = d3.select("#vis1")
-            .append("svg")
-            .attr("width", w)
-            .attr("height", h);
-
-        var data2003 = "dataWeek703.csv";
-        var data2015 = "dataWeek715.csv";
-        var currentLoad = data2003;
-        var year = d3.select("#year");
-
-        // Your beautiful D3 code will go here
-        var dataset = [];
-        var color = ["#818DC5", "#A181C5", "#C581C0", "#C5818C", "#C59A81", "#C5C381", "#89C167", "#67C184", "#67C1B3", "#696969"];
-        var coord = [];
-        var xScale;
-        var yScale;
-        var rScale;
-        var dist = [];
-
-        d3.csv(currentLoad, function(data) {
-            dataset = data;
-            for (var i = 0; i < dataset.length; i++) {
-                coord.push([parseInt(dataset[i].prostitution), parseInt(dataset[i].vehicle), parseInt(dataset[i].total), dataset[i].pdDistrict]);
-            }
-            makeCharts();
-        });
-
-        function makeCharts() {
-
-            //Create scale functions
-            xScale = d3.scale.linear()
-                .domain([0, d3.max(coord, function(d) {
-                    return d[0];
-                })])
-                .range([padding * 2, w - padding * 2]);
-
-            yScale = d3.scale.linear()
-                .domain([0, d3.max(coord, function(d) {
-                    return d[1];
-                })])
-                .range([h - padding, padding]);
-
-            rScale = d3.scale.linear()
-                .domain([0, d3.max(coord, function(d) {
-                    return d[2];
-                })])
-                .range([5, 20]);
-
-
-            // Create Circles
-            svg.selectAll("circle")
-                .data(coord)
-                .enter()
-                .append("circle")
-                .attr("cx", function(d) {
-                    return xScale(d[0]);
-                })
-                .attr("cy", function(d) {
-                    return yScale(d[1]);
-                })
-                .attr("r", function(d) {
-                    return rScale(d[2]);
-                })
-                .attr("fill", function(d, i) {
-                    return color[i];
-                })
-                .on("mouseover", function(d) {
-                    //Update the tooltip position and value
-                    d3.select("#tooltip")
-                        .style("left", xScale(d[0]) + "px")
-                        .style("top", yScale(d[0]) + "px")
-                        .style("opacity", 1)
-                        .html("<br><strong>DISTRICT: </strong>" + d[3] + "<br><strong>TOTAL CRIME: </strong>" + d[2] + "<br><strong>PROSTITUTION: </strong>" +
-                            d[0] + "<br><strong>VECHILE CRIMES: </strong>" + d[1])
-                    //Show the tooltip
-                    d3.select("#tooltip").classed("hidden", false);
-                })
-                .on("mouseout", function() {
-                    //Hide the tooltip
-                    d3.select("#tooltip").classed("hidden", true);
-                });
-
-            //Define X axis
-            var xAxis = d3.svg.axis()
-                .scale(xScale)
-                .orient("bottom")
-                .ticks(10);
-
-            //Create X axis
-            svg.append("g")
-                .attr("class", "axis")
-                .attr("transform", "translate(0," + (h - padding) + ")")
-                .call(xAxis)
-                .append("text")
-                .attr("class", "label")
-                .attr("x", w - padding)
-                .attr("y", -6)
-                //.attr("font-size", "100px")
-                .attr("font-weight", "bold")
-                .style("text-anchor", "end")
-                .text("Prostitution");
-
-            //Define Y axis
-            var yAxis = d3.svg.axis()
-                .scale(yScale)
-                .orient("left")
-                .ticks(10);
-
-            svg.append('g')
-                .attr('class', 'axis')
-                .attr("transform", "translate(" + padding + ",0)")
-                .call(yAxis)
-                .append("text")
-                .attr("class", "label")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .attr("font-weight", "bold")
-                .style("text-anchor", "end")
-                .text("Vehicle theft");
-
-
-            // Map Preview
-            d3.selectAll(".button")
-                .on("click", function() {
-                    update(d3.select(this).attr("id"));
-                })
-                .on("mouseover", function() {
-                    //Set image src to correct value
-                    d3.select("#pics")
-                        .attr("src", "minPics/" + d3.select(this).attr("id") + ".PNG")
-                        .style("visibility", "visible");
-                })
-                .on("mouseout", function() {
-                    d3.select("#pics")
-                        .style("visibility", "hidden");
-                })
-
-
-
-
-
-
-
-            //On click, update with new data
-            d3.select("#vis1")
-                .on("click", function() {
-                    var coordUp = [];
-
-                    if (currentLoad == data2003) {
-                        document.getElementById('year').innerHTML = "Showing Data for  2015";
-                        currentLoad = data2015;
-                    } else {
-                        currentLoad = data2003;
-                        document.getElementById('year').innerHTML = "Showing Data for  2003";
-                    }
-
-                    d3.csv(currentLoad, function(data) {
-                        dataset = data;
-                        for (var i = 0; i < dataset.length; i++) {
-
-                            coordUp.push([parseInt(dataset[i].prostitution), parseInt(dataset[i].vehicle), parseInt(dataset[i].total), dataset[i].pdDistrict]);
-                        }
-
-                        var rScale = d3.scale.linear()
-                            .domain([0, d3.max(coordUp, function(d) {
-                                return d[2];
-                            })])
-                            .range([5, 20]);
-
-                        //Update all circles
-                        svg.selectAll("circle")
-                            .data(coordUp)
-                            .transition()
-                            .duration(1000)
-                            .attr("cx", function(d) {
-                                return xScale(d[0]);
-                            })
-                            .attr("cy", function(d) {
-                                return yScale(d[1]);
-                            })
-                            .attr("r", function(d) {
-                                return Math.sqrt(rScale(d[2])) * 5; // Area show
-                            })
-                            .attr("fill", function(d, i) {
-                                return color[i];
-                            })
-
-                    });
-                });
-        }
-    </script>
-    <script type="text/javascript">
-        //Width and height
-        var w = 1000;
-        var h = 600;
-        var testData; //rat
-        var color2 = ["#42f450", "#f442dc", "#f44242", "#f1f442", "#ff850c", "#42f4e8"];
-        //Define map projection
-        var projection = d3.geo.mercator()
-            .center([-122.433701, 37.767683])
-            .scale(190000)
-            .translate([w / 2, h / 2]);
-
-        //Define path generator
-        var path = d3.geo.path()
-            .projection(projection);
-        //Create SVG element
-        var svg2 = d3.select("#vis2")
-            .append("svg")
-            .attr("width", w)
-            .attr("height", h);
-
-
-        //Load in GeoJSON data
-        d3.json("sfpddistricts.json", function(json) {
-            //Bind data and create one path per GeoJSON feature
-            svg2.selectAll("path")
-                .data(json.features)
-                .enter()
-                .append("path")
-                .attr("d", path)
-                .style("fill", "steelblue")
-                //.style("fill", "#b0e0e6")
-                .attr("stroke", "black");
-            /*
-                .append
-
-            labels.selectAll('.label').data(json.features).enter().append('text')
-                .attr("class", "halo")
-                .attr('transform', function(d) {
-                    return "translate(" + path.centroid(d) + ")";
-                })
-                .style('text-anchor', 'middle')
-                .text(function(d) {
-                    return d.properties.name
-                });
-            labels.selectAll('.label').data(json.features).enter().append('text')
-                .attr("class", "label")
-                .attr('transform', function(d) {
-                    return "translate(" + path.centroid(d) + ")";
-                })
-                .style('text-anchor', 'middle')
-                .text(function(d) {
-                    return d.properties.DISTRICT
-                });
-                */
-            //Load in cities data
-            d3.csv("Assignment2.csv", function(data) {
-                // Parse data into 5 arrays with appropriate cluster centers
-                testData = data;
-
-                svg2.selectAll("circle")
-                    .data(testData)
-                    .enter()
-                    .append("circle")
-                    .attr("cx", function(d) {
-                        return projection([d.lon, d.lat])[0];
-                    })
-                    .attr("cy", function(d) {
-                        return projection([d.lon, d.lat])[1];
-                    })
-                    .attr("r", function(d) {
-                        if (d.cc == 6) {
-                            return 8;
-                        } else if (d.cc == 0) {
-                            return 3;
-                        } else {
-                            return 0;
-                        }
-                    })
-                    .attr("stroke", function(d) {
-                        if (d.cc != 0) {
-                            return "black";
-                        }
-                    })
-                    .style("fill", function(d) {
-                        return color2[parseInt(d["k6"])];
-                    })
-                    .on("mouseover", function(d) {
-                        //Update the tooltip position and value
-                        d3.select("#tooltip")
-                            .html("<strong>" + d.lat + ", " + d.lon + "<strong>")
-                        //Show the tooltip
-                        d3.select("#tooltip")
-                            .classed("hidden", false);
-                    })
-                    .on("mouseout", function() {
-                        //Hide the tooltip
-                        d3.select("#tooltip")
-                            .classed("hidden", true);
-                    });;
-
-            });
-
-        });
-
-        //On click, update with new data
-        //  d3.select("#vis2")
-        //    .on("click", function() {
-        //    console.log("Press");
-        //Update all circles
-        //  update("k2", 2);
-
-        //  });
-
-        function update(update) {
-
-            document.getElementById('kmean').innerHTML = "Showing Data for " + update;
-
-            svg2.selectAll("circle")
-                .data(testData)
-                .transition()
-
-                .attr("cx", function(d) {
-                    return projection([d.lon, d.lat])[0];
-                })
-                .attr("cy", function(d) {
-                    return projection([d.lon, d.lat])[1];
-                })
-                .attr("r", function(d) {
-                    if (d.cc == parseInt(update[1])) {
-                        return 8;
-                    } else if (d.cc == 0) {
-                        return 3;
-                    } else {
-                        return 0;
-                    }
-                })
-                .attr("stroke", function(d) {
-                    if (d.cc != 0) {
-                        return "black";
-                    }
-                })
-                .style("fill", function(d) {
-                    return color2[parseInt(d[update])];
-                });
-
-        }
-    </script>
+    <script type="text/javascript" src="src/js/Assignment2A.js"></script>
+    <script type="text/javascript" src="src/js/Assignment2B.js"></script>
 </body>
 
 </html>
