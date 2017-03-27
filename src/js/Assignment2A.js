@@ -79,11 +79,13 @@
                     .html("<br><strong>DISTRICT: </strong>" + d[3] + "<br><strong>TOTAL CRIME: </strong>" + d[2] + "<br><strong>PROSTITUTION: </strong>" +
                         d[0] + "<br><strong>VECHILE CRIMES: </strong>" + d[1])
                 //Show the tooltip
-                d3.select("#tooltip").classed("hidden", false);
+                d3.select("#tooltip")
+                    .classed("hidden", false);
             })
             .on("mouseout", function() {
                 //Hide the tooltip
-                d3.select("#tooltip").classed("hidden", true);
+                d3.select("#tooltip")
+                    .classed("hidden", true);
             });
 
         //Define X axis
@@ -91,39 +93,44 @@
             .scale(xScale)
             .orient("bottom")
             .ticks(10);
-
-        //Create X axis
-        svg.append("g")
-            .attr("class", "axis")
-            .attr("transform", "translate(0," + (h - padding) + ")")
-            .call(xAxis)
-            .append("text")
-            .attr("class", "label")
-            .attr("x", w - padding)
-            .attr("y", -4)
-            .attr("font-weight", "bold")
-            .style("text-anchor", "end")
-            .text("PROSTITUTION");
-
         //Define Y axis
         var yAxis = d3.svg.axis()
             .scale(yScale)
             .orient("left")
             .ticks(10);
 
+        //Create X axis
+        svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(0," + (h - padding) + ")")
+            .call(xAxis);
+
         // Create Y axis
         svg.append('g')
             .attr('class', 'axis')
             .attr("transform", "translate(" + padding + ",0)")
-            .call(yAxis)
-            .append("text")
+            .call(yAxis);
+
+          // Create X Label
+        svg.append("text")
+            .attr("x", w - padding)
+            .attr("y", (h - padding) - 4) //set your y attribute here
+            .style("text-anchor", "end")
+            .attr("font-weight", "bold")
+            .style("font-size", "15px")
+            .text("PROSTITUTION");
+
+            // Create Y Label
+        svg.append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
-            .attr("y", 4)
-            .attr("dy", ".75em")
+            .attr("x", 0)
+            .attr("y", 65)
             .attr("font-weight", "bold")
             .style("text-anchor", "end")
-            .text("VECHILE THEFT");
+            .style("font-size", "15px")
+            .text("VEHICLE THEFT");
+
 
         //On click, update with new data
         d3.select("#vis1")
