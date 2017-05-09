@@ -75,23 +75,23 @@ function bind() {
             //  .on("mouseout", mouseout)
             //  .on("click", click);
 
-						//Bind data and create one path per GeoJSON feature
-					svg4.selectAll("path")
-							.data(json.features)
-							.enter()
-							.append("path")
-							.attr("d", path)
-							.style("fill", 'steelblue')
-							.style( "opacity", 0.5)
-							.attr("stroke", "black")
-					  // .on("mouseover", mouseover)
-						 //.on("mouseout", mouseout)
-						 //.on("click", click);
+			//Bind data and create one path per GeoJSON feature
+			svg4.selectAll("path")
+				.data(json.features)
+				.enter()
+				.append("path")
+				.attr("d", path)
+				.style("fill", 'steelblue')
+				.style( "opacity", 0.5)
+				.attr("stroke", "black")
+			 // .on("mouseover", mouseover)
+			 //.on("mouseout", mouseout)
+			 //.on("click", click);
 
     });
 
 
-setTimeout(myFunction, 200); // Let dots overlay map
+setTimeout(myFunction, 500); // Let dots overlay map
 
 }
 
